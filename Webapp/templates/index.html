@@ -1,19 +1,429 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
-    <title>Huffman Compressor</title>
-  </head>
-  <body>
-    <h2>Upload a file to compress or decompress</h2>
-    <form action="/compress" method="POST" enctype="multipart/form-data">
-      <input type="file" name="file" required />
-      <button type="submit">Compress</button>
-    </form>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Huffman File Compressor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <form action="/decompress" method="POST" enctype="multipart/form-data">
-      <input type="file" name="file" required />
-      <button type="submit">Decompress</button>
-    </form>
-  </body>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .compress-card .card-icon {
+            color: #4CAF50;
+        }
+
+        .decompress-card .card-icon {
+            color: #2196F3;
+        }
+
+        .card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .card-description {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover {
+            border-color: #999;
+            background-color: #f8f9fa;
+        }
+
+        .upload-area.dragover {
+            border-color: #007bff;
+            background-color: #e3f2fd;
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .file-types {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .file-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .selected-file {
+            background-color: #e8f5e8;
+            border-color: #4CAF50;
+            padding: 20px;
+            margin-top: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #2e7d32;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .compress-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .compress-btn:hover {
+            background: linear-gradient(135deg, #45a049, #3d8b40);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .decompress-btn {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .decompress-btn:hover {
+            background: linear-gradient(135deg, #1976D2, #1565C0);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(33, 150, 243, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .features {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .features h3 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-item {
+            text-align: center;
+            color: white;
+            opacity: 0.9;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗜️ Huffman File Compressor</h1>
+            <p>Efficient lossless compression using Huffman coding algorithm</p>
+        </div>
+
+        <div class="cards-container">
+            <!-- Compression Card -->
+            <div class="card compress-card">
+                <div class="card-header">
+                    <span class="card-icon">📦</span>
+                    <h2>Compress Files</h2>
+                    <p class="card-description">Reduce file size using advanced Huffman coding compression. Perfect for text files, documents, and data files.</p>
+                </div>
+                
+                <form action="/compress" method="POST" enctype="multipart/form-data" id="compressForm">
+                    <div class="upload-area" onclick="document.getElementById('compressFile').click()">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Click to select file or drag and drop</div>
+                        <div class="file-types">Supports all file types</div>
+                        <input type="file" name="file" id="compressFile" class="file-input" required />
+                    </div>
+                    
+                    <div class="selected-file" id="compressSelectedFile">
+                        <div class="file-info">
+                            <span>📄</span>
+                            <span id="compressFileName">No file selected</span>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn compress-btn" id="compressSubmit" disabled>
+                        Compress File
+                    </button>
+                </form>
+            </div>
+
+            <!-- Decompression Card -->
+            <div class="card decompress-card">
+                <div class="card-header">
+                    <span class="card-icon">📂</span>
+                    <h2>Decompress Files</h2>
+                    <p class="card-description">Restore compressed files to their original format. Upload your compressed file to get back the original data.</p>
+                </div>
+                
+                <form action="/decompress" method="POST" enctype="multipart/form-data" id="decompressForm">
+                    <div class="upload-area" onclick="document.getElementById('decompressFile').click()">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Click to select file or drag and drop</div>
+                        <div class="file-types">Upload compressed files only</div>
+                        <input type="file" name="file" id="decompressFile" class="file-input" required />
+                    </div>
+                    
+                    <div class="selected-file" id="decompressSelectedFile">
+                        <div class="file-info">
+                            <span>📄</span>
+                            <span id="decompressFileName">No file selected</span>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn decompress-btn" id="decompressSubmit" disabled>
+                        Decompress File
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="features">
+            <h3>Why Choose Huffman Compression?</h3>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <span class="feature-icon">⚡</span>
+                    <h4>Fast Processing</h4>
+                    <p>Quick compression and decompression</p>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🔒</span>
+                    <h4>Lossless</h4>
+                    <p>No data loss during compression</p>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📊</span>
+                    <h4>Optimal Efficiency</h4>
+                    <p>Uses frequency-based encoding</p>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🌐</span>
+                    <h4>Universal</h4>
+                    <p>Works with any file type</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        
+        const compressFileInput = document.getElementById('compressFile');
+        const compressSubmitBtn = document.getElementById('compressSubmit');
+        const compressSelectedFile = document.getElementById('compressSelectedFile');
+        const compressFileName = document.getElementById('compressFileName');
+
+        
+    
+        const decompressFileInput = document.getElementById('decompressFile');
+        const decompressSubmitBtn = document.getElementById('decompressSubmit');
+        const decompressSelectedFile = document.getElementById('decompressSelectedFile');
+        const decompressFileName = document.getElementById('decompressFileName');
+
+        
+        
+        compressFileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                compressFileName.textContent = file.name;
+                compressSelectedFile.style.display = 'block';
+                compressSubmitBtn.disabled = false;
+            } else {
+                compressSelectedFile.style.display = 'none';
+                compressSubmitBtn.disabled = true;
+            }
+        });
+
+        
+        decompressFileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                decompressFileName.textContent = file.name;
+                decompressSelectedFile.style.display = 'block';
+                decompressSubmitBtn.disabled = false;
+            } else {
+                decompressSelectedFile.style.display = 'none';
+                decompressSubmitBtn.disabled = true;
+            }
+        });
+
+        
+        function setupDragAndDrop(uploadArea, fileInput) {
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    fileInput.dispatchEvent(new Event('change'));
+                }
+            });
+        }
+
+        
+        const compressUploadArea = document.querySelector('.compress-card .upload-area');
+        const decompressUploadArea = document.querySelector('.decompress-card .upload-area');
+        
+        setupDragAndDrop(compressUploadArea, compressFileInput);
+        setupDragAndDrop(decompressUploadArea, decompressFileInput);
+
+        
+        document.getElementById('compressForm').addEventListener('submit', function(e) {
+            compressSubmitBtn.textContent = 'Compressing...';
+            compressSubmitBtn.disabled = true;
+        });
+
+        document.getElementById('decompressForm').addEventListener('submit', function(e) {
+            decompressSubmitBtn.textContent = 'Decompressing...';
+            decompressSubmitBtn.disabled = true;
+        });
+    </script>
+</body>
 </html>
