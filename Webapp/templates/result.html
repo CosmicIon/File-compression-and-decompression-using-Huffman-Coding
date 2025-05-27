@@ -1,15 +1,122 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
     <title>Compression Result</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
   </head>
   <body>
-    <h2>Compression Result</h2>
-    <p>Original file size: {{ original_size }} bytes</p>
-    <p>Compressed file size: {{ compressed_size }} bytes</p>
-    <p>File size reduced: {{ percent_reduced }}%</p>
-    <a href="{{ url_for('download_file', filename=download_link) }}"
-      >Download Compressed File</a
-    >
+    <div class="container">
+      <div class="header">
+        <h1>Compression Complete</h1>
+        <p>Your file has been successfully processed</p>
+      </div>
+
+      <div class="cards-container">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">✅</span>
+            <h2>Compression Results</h2>
+            <p class="card-description">
+              File compression statistics and download
+            </p>
+          </div>
+
+          <div class="result-stats">
+            <div class="stat-item">
+              <div class="stat-label">Original Size</div>
+              <div class="stat-value">{{ original_size }} bytes</div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-label">Compressed Size</div>
+              <div class="stat-value">{{ compressed_size }} bytes</div>
+            </div>
+
+            <div class="stat-item highlight">
+              <div class="stat-label">Size Reduction</div>
+              <div class="stat-value">{{ percent_reduced }}%</div>
+            </div>
+          </div>
+
+          <a
+            href="{{ url_for('download_file', filename=download_link) }}"
+            class="submit-btn compress-btn"
+            style="
+              text-decoration: none;
+              display: block;
+              text-align: center;
+              margin-top: 30px;
+            "
+          >
+            📥 Download Compressed File
+          </a>
+
+          <div class="actions" style="margin-top: 20px; text-align: center">
+            <a
+              href="/"
+              style="color: #666; text-decoration: none; font-size: 1rem"
+              >← Back to Home</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .result-stats {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 25px;
+        margin: 20px 0;
+      }
+
+      .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      .stat-item:last-child {
+        border-bottom: none;
+      }
+
+      .stat-item.highlight {
+        background: #e8f5e8;
+        margin: 10px -15px;
+        padding: 15px;
+        border-radius: 8px;
+        border: none;
+      }
+
+      .stat-label {
+        font-weight: 600;
+        color: #333;
+        font-size: 1rem;
+      }
+
+      .stat-value {
+        font-weight: 700;
+        color: #4caf50;
+        font-size: 1.1rem;
+      }
+
+      .highlight .stat-value {
+        font-size: 1.3rem;
+        color: #2e7d32;
+      }
+
+      .actions a:hover {
+        color: #333;
+      }
+    </style>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
   </body>
 </html>
