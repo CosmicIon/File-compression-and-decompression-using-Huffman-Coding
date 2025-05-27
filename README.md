@@ -1,7 +1,5 @@
 # 📦 File Compression and Decompression using Huffman coding.
 
-> ⚠️ **Status**: This project is currently in the **working phase**. Some features may be incomplete or under development.
-
 A lightweight, lossless compression tool that uses **Huffman Coding** to compress and decompress text-based files. Built entirely in **C++**, this project demonstrates the power of greedy algorithms and binary trees in real-world data handling.
 
 ---
@@ -19,24 +17,37 @@ Huffman Coding is a classic **lossless data compression algorithm** that assigns
 - ✅ Supports large files (e.g., DNA sequences, logs)
 - ✅ Clean modular structure (C++ source files and headers)
 - ✅ Frequency analysis + file size comparison included
-- 🚧 Optional web interface using HTML/CSS/JS _(in progress)_
-
+- ✅ Web interface using HTML/CSS/JS
 ---
 
 ## 📂 Folder Structure
 
 ```
 HuffmanCompression/
+├── Webapp/            # web-based interface
+│   ├── static/
+|       ├── script.js
+|       ├── style.css
+│   ├── templates/
+|       ├── index.html
+|       ├── result.html
+|   ├── app.py
+|   ├── huffman.exe
 ├── src/              # C++ source files
 │   ├── main.cpp
 │   ├── huffman.cpp
+|   ├── utils.cpp
 ├── include/          # Header files
 │   └── huffman.h
+│   └── utils.h
 ├── test_files/       # Sample files to compress
 │   └── sample.txt
 │   └── dna_sample.txt
+│   └── harryPotter.txt
+│   └── sample2.txt
 ├── output/           # Compressed and decompressed outputs
-├── README.md         # Project documentation
+├── proposal/         # Project documentation
+├── README.md         # Project overview and instructions
 ```
 
 ---
@@ -46,7 +57,9 @@ HuffmanCompression/
 - **C++** (Core logic and file handling)
 - **Priority Queue / Min-Heap** for tree construction
 - **Custom Tree Struct** for Huffman nodes
-- _(Optional)_ HTML/CSS/JavaScript for web interface (planned)
+- **File I/O**:  for reading input text files and writing compressed/decompressed output files.
+- **Python & Flask**: providing APIs or endpoints ,enabling integration between the C++ core and the web interface.
+- **HTML/CSS/JavaScript**: for web interface
 
 ---
 
