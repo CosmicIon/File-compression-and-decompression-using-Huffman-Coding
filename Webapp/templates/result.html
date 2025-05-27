@@ -7,7 +7,6 @@
     <h2>Compression Result</h2>
     <p>Original file size: {{ original_size }} bytes</p>
     <p>Compressed file size: {{ compressed_size }} bytes</p>
-    <p>Compression ratio: {{ compression_ratio }}</p>
     <p>File size reduced: {{ percent_reduced }}%</p>
     <a href="{{ url_for('download_file', filename=download_link) }}"
       >Download Compressed File</a
