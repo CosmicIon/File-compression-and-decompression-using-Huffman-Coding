@@ -24,10 +24,27 @@ def compress():
     output_path = os.path.join(OUTPUT_FOLDER, "compressed.txt")
     file.save(input_path)
 
+    original_size = os.path.getsize(input_path)
+
     subprocess.run([HUFFMAN_EXE, "-c", input_path, output_path], check=True)
 
-    return send_from_directory(OUTPUT_FOLDER, "compressed.txt", as_attachment=True)
+    compressed_size = os.path.getsize(output_path)
 
+    if original_size > 0:
+        compression_ratio = compressed_size / original_size
+        percent_reduced = (1 - compression_ratio) * 100
+    else:
+        compression_ratio = 0
+        percent_reduced = 0
+
+    return render_template(
+        "result.html",
+        original_size=original_size,
+        compressed_size=compressed_size,
+        compression_ratio=round(compression_ratio, 2),
+        percent_reduced=round(percent_reduced, 2),
+        download_link="compressed.txt"
+    )
 @app.route("/decompress", methods=["POST"])
 def decompress():
     file = request.files["file"]
@@ -38,6 +55,10 @@ def decompress():
     subprocess.run([HUFFMAN_EXE, "-d", input_path, output_path], check=True)
 
     return send_from_directory(OUTPUT_FOLDER, "decompressed.txt", as_attachment=True)
+
+@app.route("/download/<filename>")
+def download_file(filename):
+    return send_from_directory(OUTPUT_FOLDER, filename, as_attachment=True)
 
 if __name__ == "__main__":
     app.run(debug=True)
